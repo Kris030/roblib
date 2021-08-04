@@ -1,7 +1,7 @@
 import { Manager } from 'socket.io-client';
 
 let socket: ReturnType<Manager['socket']>;
-export const init = (ip) => {
+export const init = (ip: string) => {
 	const man = new Manager(ip);
 
 	// create socket
@@ -38,3 +38,10 @@ export const LED = ({ r = 0, g = 120, b = 180 } = {}) => {
 export const stop = () => void socket.emit('stop');
 
 export const sleep = (ms: number) => new Promise<void>(res => setTimeout(res, ms));
+
+export const exit = (stops = false) => {
+	if (stops)
+		stop();
+	
+	close();
+};
