@@ -1,7 +1,6 @@
-import roland
-from flask import Flask, request, jsonify
-from flask.json.tag import JSONTag
 from flask_socketio import SocketIO, emit
+from flask import Flask
+import roland
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -58,8 +57,7 @@ def led(data):
 # STOP request, no body required
 @socketio.on('stop', namespace='/io')
 def stop():
-    roland.alszik()
-    #pass
+    roland.sleep()
 
 # get tracksensor info
 @socketio.on('tracksensor', namespace='/io')
