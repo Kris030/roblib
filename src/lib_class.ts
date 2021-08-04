@@ -26,6 +26,10 @@ export class robot {
 		return new Promise<void>(resolve => this.socket.on('pong', resolve));
 	}
 
+	buzzer({pw=0, ms=0} = {}){
+		this.socket.emit('buzzer',{ pw, ms });
+	}
+
 	getSensorData () {
 		this.socket.emit('tracksensor');
 		return new Promise<[number, number, number, number]>(res => 

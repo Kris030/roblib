@@ -24,20 +24,22 @@ if(process.argv[2] && process.argv[2].includes('-t=') ) {
 
 // settings
 const REFRESH_RATE_MS = 10;
-const SPEED = 2;
+const SPEED = 3;
 // between 0 and 1
 // increment these to sharpen turn angle
 const TURN_SPEED_MIN_MODIFIER = .6;
-const TURN_SPEED_MED_MODIFIER = .95;
-const TURN_SPEED_MAX_MODIFIER = 1.5;
+const TURN_SPEED_MED_MODIFIER = .85;
+const TURN_SPEED_MAX_MODIFIER = 1.9;
 
 let lastInput = [1,1,1,1];
 let mode = 'normal';
 
 const tryToGetBackToLine = () => {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
 
         mode = 'getback';
+
+        console.log('Trying to find my way back')
 
         // fuck it just go forward for 2 secs, if no input move backwards
         let tempRun = true;
@@ -96,7 +98,7 @@ const tryToGetBackToLine = () => {
 // sharp turn until back on track
 // direction is [-1 - 1]
 const turnUntilLineFound = (direction) => {
-    return new Promise(resolve => {
+    return new Promise(async resolve => {
         mode = 'getback';
 
         // 5 sec timeout
@@ -117,7 +119,7 @@ const turnUntilLineFound = (direction) => {
             }
 
             // keep turning
-            roland.move(turn(direction, TURN_SPEED_MAX_MODIFIER));
+            roland.move({left:5*SPEED*direction, right:5*SPEED* -direction});
             await sleep(REFRESH_RATE_MS);
         }
 
@@ -129,31 +131,73 @@ const turnUntilLineFound = (direction) => {
     }); 
 }
 
-const getDirection = (input) => {
-    const [lo, li, ri, ro] = input;
+const TRACK_LEFT_TIMEOUT = 500;
+const NUMBER_OF_RECORDS = 50;
+
+let lastInputTime = new Date().valueOf();
+let lastCommands = [];
+
+
+
+const updateLastCommands = (newest) => {
+    if(lastCommands.length >= NUMBER_OF_RECORDS){
+        lastCommands.pop();
+        lastCommands.unshift(newest);
+    }
+}
+
+const getLastGeneralDirection = () => {
+    var left, right = 0;
+    lastCommands.forEach(x => {
+        left += x[0];
+        right += x[3];
+    });
+
+    return [left, right];
+}
+
+const getDirection = async(input) => {
+    let [lo, li, ri, ro] = input;
+
+    // no input within timeout
+    if( lo+ro+ri+li == 0 && new Date().valueOf() > lastInputTime + TRACK_LEFT_TIMEOUT ){
+        // off-track
+
+        console.log('HARAM');
+
+        const [left, right] = getLastGeneralDirection();
+
+        input = await turnUntilLineFound(left > right ? -1 : 1);
+    
+        if(input === undefined){ process.exit(0); return; }
+
+        [lo, li, ri, ro] = input;
+    }
 
     // check if we're off track
     // no input
-    if( lo+ro+ri+li == 0 && mode != 'getback'){
+    /* if( lo+ro+ri+li == 0 && mode != 'getback'){
         // where did we get lost
-
+        var inTmp;
         // curve to the left - turn left
         if(lastInput[0] || lastInput[1] ){
-            [lo, li, ri, ro] = await turnUntilLineFound(-1);
+            inTmp = await turnUntilLineFound(-1);
         // turn right
         } else if( lastInput[2] || lastInput[3] ){
-            [lo, li, ri, ro] = await turnUntilLineFound(1);
+            inTmp = await turnUntilLineFound(1);
         
         // we fucked up
         } else {
             // update sensor variables if we somehow wandered back
-            [lo, li, ri, ro] = await tryToGetBackToLine();
+            inTmp = await turnUntilLineFound(1);
         }
 
         // shutdown
-        if(lo == undefined){ process.exit(0); }
+        if(inTmp == undefined){ roland.move(); process.exit(0); return; }
 
-    }
+        [lo, li, ri, ro] = inTmp;
+
+    } // */
 
     // console.log(`${lo} | ${li} | ${ri} | ${ro} `);  // DEBUG
 
@@ -162,6 +206,10 @@ const getDirection = (input) => {
     // -1 -.66 -.33 0 .33 .66 1
 
     lastInput = [lo, li, ri, ro];
+
+    lastInputTime = new Date().valueOf();
+    updateLastCommands(lastInput);
+
     return (ro && !ri ? 1 : ro*0.33 + ri*0.33) + -( lo && !li ? 1 : lo*0.33 + li*0.33 );
 }
 
@@ -194,6 +242,8 @@ const turn = (angle, speed) => {
         target = { left:speed, right:speed }
     }
 
+    console.log(target);
+
     return target;
 }
 
@@ -219,9 +269,10 @@ const invertSensorInput = (input) => {
 /* // TEST
 var i = 0;
 while(i < test_inputs.length - 1){    
-    const direction = getDirection( test_inputs[i] );
-    console.log(turn(direction, SPEED));
+    const direction = await getDirection( test_inputs[i] );
+    console.log(direction);
 
+    console.log(turn(direction, SPEED));
 
     await sleep(REFRESH_RATE_MS);
 
@@ -230,10 +281,13 @@ while(i < test_inputs.length - 1){
 
 
 while(run){
-    const sensDat = await roland.getSensorData();
-    // console.log(sensDat);
+    const sensDat = invertSensorInput( await roland.getSensorData() );
+    
+    console.log(`detected ${JSON.stringify(sensDat)}`);
 
-    const direction = getDirection( invertSensorInput( sensDat ) );
+    const direction = await getDirection( sensDat );
+
+    console.log(direction);
 
     roland.move(turn(direction, SPEED));
 
