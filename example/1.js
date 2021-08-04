@@ -1,4 +1,4 @@
-import { init, getSensorData, move } from './lib.js';
+import { init, getSensorData, move } from '../out/lib.js';
 
 await init();
 

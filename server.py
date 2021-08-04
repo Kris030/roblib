@@ -1,16 +1,17 @@
-import roland
-from flask import Flask, request, jsonify
-from flask.json.tag import JSONTag
 from flask_socketio import SocketIO, emit
+from flask import Flask
+import roland
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 
+roland.init()
+
 def clamp(_min, _max, val):
     return max(_min, min(val, _max))
 
-# request for moving aruond
-# BODY: {"left":100,"right":100}
+# request for moving around
+# BODY: {"left": 100, "right": 100}
 @socketio.on('move', namespace='/io')
 def move(data):
 
@@ -27,18 +28,18 @@ def move(data):
     left = clamp(-100, 100, left)
     right = clamp(-100, 100, right)
 
-    # print((left, right))  # DEBUG
+    # print((left, right))
 
     # move
     roland.motor(left, right)
 
 # request for LED
-# BODY: {"r":255,"g":255,"b":255}
+# BODY: {"r": 255,"g": 255,"b": 255}
 @socketio.on('led', namespace='/io')
 def led(data):
     # check if keys in request
     if (not 'r' in data or not 'g' in data or not 'b' in data or type(data['r']) is not int or type(data['g']) is not int or type(data['b']) is not int) :
-        socketio.emit('error',{"description":"Incorrect request data. Please use {\"r\":[0-255],\"g\":[0-255],\"b\":[0-255]}"})
+        socketio.emit('error', { "description": "Incorrect request data. Please use {\"r\":[0-255], \"g\":[0-255], \"b\":[0-255]}" })
 
     # convert to integer
     R = int(data['r'])
@@ -52,21 +53,17 @@ def led(data):
 
     # set LED color
     roland.led(R, G, B)
-    print((R,G,B))
+    # print((R, G, B))
 
 
 # STOP request, no body required
 @socketio.on('stop', namespace='/io')
 def stop():
-    roland.alszik()
-    #pass
+    roland.sleep()
 
 # get tracksensor info
 @socketio.on('tracksensor', namespace='/io')
 def sensor():
     res = roland.tracksensor()
-    print(res)
-
     emit('return-tracksensor', { "data": res })
-
-    print("after emit")
+    # print(res)

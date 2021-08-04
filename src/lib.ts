@@ -1,23 +1,35 @@
 import { Manager } from 'socket.io-client';
 
 let socket: ReturnType<Manager['socket']>;
-export const init = () => {
-
-	const ip = 'http://192.168.0.1:5000/io';
-
+export const init = (ip) => {
 	const man = new Manager(ip);
 
 	// create socket
 	socket = man.socket('/io', {});
 
+	socket.on('connect', () => {
+		console.log('Connected!');
+	});
+
 	// connected to server
 	return new Promise<void>(res => socket.on('connect', res));
 };
 
+
+
+/// --- TEST ---
+export const ping = () => {
+	socket.emit('ping');
+};
+
+
+/// --- ---- ---
+
+
 export const getSensorData = () => {
 	socket.emit('tracksensor');
-	return new Promise(res => 
-		socket.once('return-tracksensor', ({ data }) => res(data))
+	return new Promise<[number, number, number, number]>(res => 
+		socket.once('return-tracksensor', ( { data } ) => res(data))
 	);
 };
 
@@ -34,6 +46,6 @@ export const LED = ({ r = 0, g = 120, b = 180 } = {}) => {
 	socket.emit('led', { r, g, b });
 };
 
-export const stop = () => socket.emit('stop');
+export const stop = () => void socket.emit('stop');
 
-export const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+export const sleep = (ms: number) => new Promise<void>(res => setTimeout(res, ms));
