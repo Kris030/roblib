@@ -17,10 +17,6 @@ export class robot {
 		// create socket
 		this.socket = man.socket('/io', {});
 
-		this.socket.onAny((event) => {
-			console.log(`event: ${event}`);
-		});
-
 		return new Promise<void>(resolve => this.socket.on('connect', resolve));
 	}
 
