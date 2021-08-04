@@ -1,5 +1,5 @@
 {
-  "name": "@Kris030/roblib",
+  "name": "@kris030/roblib",
   "version": "1.0.0",
   "description": "A remote library for a dank engine.",
   "type": "module",

@@ -17,15 +17,15 @@ export class robot {
 		// create socket
 		this.socket = man.socket('/io', {});
 
+		this.socket.onAny((event) => {
+			console.log(`event: ${event}`);
+		});
+
 		return new Promise<void>(resolve => this.socket.on('connect', resolve));
 	}
 
 	ping(){
 		this.socket.emit('ping');
-
-		this.socket.on('pong', function() {
-			console.log('Kurva anyád');
-		});
 
 		return new Promise<void>(resolve => this.socket.on('pong', resolve));
 	}
@@ -54,7 +54,6 @@ export class robot {
 	
 	stop () { this.socket.emit('stop'); }
 	
-	sleep (ms: number) { return new Promise<void>(res => setTimeout(res, ms));  };
 	
 
 }

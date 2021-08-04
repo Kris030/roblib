@@ -15,17 +15,6 @@ export const init = (ip) => {
 	return new Promise<void>(res => socket.on('connect', res));
 };
 
-
-
-/// --- TEST ---
-export const ping = () => {
-	socket.emit('ping');
-};
-
-
-/// --- ---- ---
-
-
 export const getSensorData = () => {
 	socket.emit('tracksensor');
 	return new Promise<[number, number, number, number]>(res => 

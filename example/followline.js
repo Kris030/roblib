@@ -1,8 +1,10 @@
 import { robot } from '../out/lib_class.js';
 
-const test = new robot('http://127.0.0.1:5000/io');
+const roland = new robot('http://127.0.0.1:5000/io');
 
-await test.init();
+const sleep = (ms) => { return new Promise(resolve => setTimeout(() => resolve, ms)) }
+
+await roland.init();
 console.log('Init...');
 
 let run = true;
@@ -22,19 +24,12 @@ const getDirection = (input) => {
 }
 
 
-var a = await test.ping();
-console.log(a);
-
-/* while(run){
-    console.log('loop called');
-
-    getSensorData().then(x => {
-        console.log(x);
-    });
+while(run){    
+    console.log(await roland.getSensorData());
    
    
     await sleep(500);
-} */
+}
 
 
 
