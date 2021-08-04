@@ -1,5 +1,5 @@
 {
-  "name": "roblib",
+  "name": "@Kris030/roblib",
   "version": "1.0.0",
   "description": "A remote library for a dank engine.",
   "type": "module",
@@ -16,5 +16,12 @@
     "build": "tsc",
     "start": "node --experimental-json-modules .",
     "clean": "rm -rf out"
+  },
+  "repository":{
+    "type":"git",
+    "url":"https://github.com/Kris030/roblib.git"
+  },
+  "publishConfig": {
+    "registry":"https://npm.pkg.github.com"
   }
 }
