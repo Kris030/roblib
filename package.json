@@ -1,0 +1,17 @@
+{
+  "name": "roblib",
+  "version": "1.0.0",
+  "description": "A remote library for a dank engine.",
+  "type": "module",
+  "main": "out/index.js",
+  "dependencies": {
+    "node-fetch": "^2.6.1",
+    "socket.io-client": "^4.1.3"
+  },
+	"scripts": {
+		"dev": "node --enable-source-maps --experimental-json-modules --no-warnings .",
+		"build": "./build.sh",
+		"start": "node --experimental-json-modules .",
+		"clean": "rm -rf out"
+	}
+}
