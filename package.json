@@ -10,7 +10,7 @@
   },
 	"scripts": {
 		"dev": "node --enable-source-maps --experimental-json-modules --no-warnings .",
-		"build": "./build.sh",
+		"build": "tsc",
 		"start": "node --experimental-json-modules .",
 		"clean": "rm -rf out"
 	}
