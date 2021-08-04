@@ -16,7 +16,7 @@ export const init = () => {
 
 export const getSensorData = () => {
 	socket.emit('tracksensor');
-	return new Promise(res => 
+	return new Promise<[number, number, number, number]>(res => 
 		socket.once('return-tracksensor', ({ data }) => res(data))
 	);
 };
@@ -34,6 +34,6 @@ export const LED = ({ r = 0, g = 120, b = 180 } = {}) => {
 	socket.emit('led', { r, g, b });
 };
 
-export const stop = () => socket.emit('stop');
+export const stop = () => void socket.emit('stop');
 
-export const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
+export const sleep = (ms: number) => new Promise<void>(res => setTimeout(res, ms));
