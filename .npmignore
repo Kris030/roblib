@@ -1,0 +1,4 @@
+# meghatározza hogy mi ne legyen benne az npm package-ben
+src
+example
+*.py
