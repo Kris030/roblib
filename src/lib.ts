@@ -35,6 +35,10 @@ export const LED = ({ r = 0, g = 120, b = 180 } = {}) => {
 	socket.emit('led', { r, g, b });
 };
 
+export const buzzer = ({ pw = 0, ms = 0} = {}) => {
+	socket.emit('buzzer', { pw, ms });
+};
+
 export const stop = () => void socket.emit('stop');
 
 export const sleep = (ms: number) => new Promise<void>(res => setTimeout(res, ms));
