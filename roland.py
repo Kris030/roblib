@@ -1,7 +1,8 @@
 #-*- coding:UTF-8 -*-
+from timer import set_timer
 from utils import clamp
-import wiringpi
 import RPi.GPIO as GPIO
+import wiringpi
 
 # Pinek
 # Motor
@@ -99,12 +100,9 @@ def sleep():
 
 def buzzer(pw, ms):
 	wiringpi.softPwmWrite(buzzer_pin, pw)
-	wiringpi.delay(ms)
-	wiringpi.softPwmWrite(buzzer_pin, 100)
+	set_timer(ms, lambda: wiringpi.softPwmWrite(buzzer_pin, 100))
 
 # [-90, 90]
-async def servo_absolute(degree):
+def servo_absolute(degree):
 	degree = clamp(degree, -90, 90)
-
 	wiringpi.softPwmWrite(servo_pin, (int) (15 - (degree / 9)))
-	wiringpi.delay(1000)

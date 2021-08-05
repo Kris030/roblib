@@ -58,7 +58,7 @@ def sensor():
 
 # set servo angle
 @socketio.on('servo', namespace='/io')
-def sensor(data):
+def servo(data):
 
     if not 'degree' in data or type(data['degree']) is not int:
         socketio.emit('error', { "description": "Incorrect request data. Please use {\"degree\": [-90-90]}" })
