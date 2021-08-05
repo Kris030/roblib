@@ -1,10 +1,9 @@
 import { buzzer, init as rob_init, LED, move } from './lib.js';
-import { ip } from '../../config.json';
 
 // the link to your model provided by Teachable Machine export panel
 const url = './';
 
-await rob_init(ip);
+await rob_init('192.168.0.1');
 console.log('Init...');
 
 let model, webcam, labelContainer, maxPredictions;
