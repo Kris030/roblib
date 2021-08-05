@@ -31,8 +31,8 @@ const sampleRateHertz = 16000, request = {
 const commands = [
   {
     name: 'move',
-    regex: /move (\d+) seconds with speed (\d{1,3})/,
-    handler: ([ time, sp]) => {
+    regex: /move (\d+) seconds? with speed (\d{1,3})/,
+    handler: (time, sp) => {
       const speed = Number(sp);
 
       roland.move({ left: speed, right: speed });
@@ -43,8 +43,8 @@ const commands = [
   },
   {
     name: 'turn',
-    regex: /turn ((?:left)|(?:right)) for (\d+) seconds with speed (\d{1,3})/,
-    handler: ([direction, time, sp]) => {
+    regex: /turn ((?:left)|(?:right)) for (\d+) seconds? with speed (\d{1,3})/,
+    handler: (direction, time, sp) => {
       const speed = Number(sp);
       
       if (direction === 'right')
@@ -60,7 +60,7 @@ const commands = [
   {
     name: 'led',
     regex: /turn led ((?:red)|(?:green)|(?:blue))/,
-    handler: ([color]) => {
+    handler: color => {
       
       switch(color) {
         case 'red':
@@ -79,15 +79,23 @@ const commands = [
   }, 
   {
     name: 'buzz',
-    regex: /buzz (\d+) seconds with frequency (\d{1,3})/,
-    handler: ([time, frequency]) => {
-      
-      roland.buzzer({ pw: parseInt(time) * 1000 });
+    regex: /buzz (\d+) seconds? with frequency (\d{1,3})/,
+    handler: (time, frequency) => {
+      console.log(time + ' ' + frequency);
+      time = Number(time) * 1000;
+      frequency = Number(frequency);
+
+      roland.buzzer(frequency);
       setTimeout(roland.buzzer, time);
 
-      console.log(`buzzing for ${time}s with frequency ${frequency}hz`);
+      console.log(`buzzing for ${time}ms with frequency ${frequency}hz`);
     }
-  }, 
+  },
+  {
+    name: 'stop',
+    regex: /stop/,
+    handler: () => roland.move()
+  },
   {
     name: 'explosive_diarrhea',
     regex: /explosive diarrhea/,
@@ -106,7 +114,9 @@ const tryCommand = text => {
     if (!res)
       return false;
     
+    console.log(res);
     [, ...rArr] = res;
+    console.log(rArr);
     return true;
   });
 
@@ -120,7 +130,7 @@ const tryCommand = text => {
 const handleTranscript = data => {
     if (data.results && data.results[0].alternatives[0]) {
         console.log(`received ${data.results[0].alternatives[0].transcript}`);
-
+        console.log(data.results[0].alternatives);
         const transcript = data.results[0].alternatives[0].transcript.toString().trim().toLowerCase();
         tryCommand(transcript);
     } else
