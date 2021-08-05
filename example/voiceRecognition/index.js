@@ -81,7 +81,6 @@ const commands = [
     name: 'buzz',
     regex: /buzz (\d+) seconds with frequency (\d{1,3})/,
     handler: ([time, frequency]) => {
-      const [, time, frequency] = buzzMatch;
       
       roland.buzzer({ pw: parseInt(time) * 1000 });
       setTimeout(roland.buzzer, time);
