@@ -1,9 +1,10 @@
 import { buzzer, init as rob_init, LED, move } from './lib.js';
+import { ip } from '../../config.json';
 
 // the link to your model provided by Teachable Machine export panel
 const url = './';
 
-// await rob_init('http://192.168.0.1:5000/');
+await rob_init(ip);
 console.log('Init...');
 
 let model, webcam, labelContainer, maxPredictions;
@@ -68,9 +69,6 @@ const TURN_SPEED = 0.5;
 function execCommand(command){
     console.log(command);
 
-    return;
-
-    // 
     switch(command){
         case 'forward':
             move({left:SPEED, right:SPEED });
@@ -86,12 +84,10 @@ function execCommand(command){
         break;
         case 'idle':
             // don't spam with unnecessary requests
-            if(lastPredicts[ lastPredicts.length - 1 ] != 'idle' ){
+            if (lastPredicts[ lastPredicts.length - 1 ] != 'idle')
                 move();
-            }
         break;  
     }
-
 
 }
 
