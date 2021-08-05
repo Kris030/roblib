@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 const client = new speech.SpeechClient();
 
-import Robot from '../../src/lib_class.js';
+import Robot from '../../out/lib_class.js';
 const roland = new Robot();
 
 await roland.init();
