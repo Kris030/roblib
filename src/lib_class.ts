@@ -37,13 +37,9 @@ export class Robot {
 		this.socket.emit('move', { left, right });
 	};
 
-	LED({ r = 0, g = 120, b = 180 } = {}) {
-		const min = Math.min(r, g, b), max = Math.max(r, g, b);
-		if (min < 0 || max > 255)
-			throw `Values should be between 0 and 255`;
-
+	LED({ r = false, g = false, b = false } = {}) {
 		this.socket.emit('led', { r, g, b });
-	};
+	}
 	
 	stop() { this.socket.emit('stop'); }
 

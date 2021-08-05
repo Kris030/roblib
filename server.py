@@ -37,24 +37,12 @@ def move(data):
 @socketio.on('led', namespace='/io')
 def led(data):
     # check if keys in request
-    if (not 'r' in data or not 'g' in data or not 'b' in data or type(data['r']) is not int or type(data['g']) is not int or type(data['b']) is not int) :
-        socketio.emit('error', { "description": "Incorrect request data. Please use {\"r\": [0-255], \"g\": [0-255], \"b\": [0-255]}" })
+    if (not 'r' in data or not 'g' in data or not 'b' in data or type(data['r']) is not bool or type(data['g']) is not bool or type(data['b']) is not bool) :
+        socketio.emit('error', { "description": "Incorrect request data. Please use {\"r\": true|false, \"g\": true|false, \"b\": true|false}" })
         return
 
-    # convert to integer
-    R = int(data['r'])
-    G = int(data['g'])
-    B = int(data['b'])
-
-    # clamp value between 0 and 255
-    R = clamp(0, 255, R)
-    G = clamp(0, 255, G)
-    B = clamp(0, 255, B)
-
     # set LED color
-    roland.led(R, G, B)
-    # print((R, G, B))
-
+    roland.led(data['r'], data['g'], data['b'])
 
 # STOP request, no body required
 @socketio.on('stop', namespace='/io')

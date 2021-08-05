@@ -29,10 +29,7 @@ export const move = ({ left = 0, right = 0 } = {}) => {
 		socket.emit('move', { left, right });
 };
 	
-export const LED = ({ r = 0, g = 120, b = 180 } = {}) => {
-	const min = Math.min(r, g, b), max = Math.max(r, g, b);
-	if (min < 0 || max > 255)
-		throw `Values should be between 0 and 255`;
+export const LED = ({ r = false, g = false, b = false } = {}) => {
 	socket.emit('led', { r, g, b });
 };
 
