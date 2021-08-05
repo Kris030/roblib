@@ -1,13 +1,13 @@
 import { SpeechClient } from '@google-cloud/speech';
-import * as roland from '../../out/lib_class.js';
+import * as roland from '../../out/lib.js';
 import recorder from 'node-record-lpcm16';
-import { ip } from '../../config.json';
+//import { ip } from '../../config.json';
 
 process.env['GOOGLE_APPLICATION_CREDENTIALS'] = './google_credentials.json';
 
 const client = new SpeechClient();
 
-await roland.init(ip);
+await roland.init('http://192.168.0.1:5000');
 
 const sampleRateHertz = 16000, request = {
   config: {
