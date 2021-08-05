@@ -36,12 +36,22 @@ export const LED = ({ r = 0, g = 120, b = 180 } = {}) => {
 };
 
 export const buzzer = ({ pw = 0, ms = 0} = {}) => {
+	if (pw < 0 || pw > 100)
+		throw 'PW values should be between 0 and 100';
+	if (ms <= 0)
+		throw 'MS values should be greater than 0'
 	socket.emit('buzzer', { pw, ms });
 };
 
 export const stop = () => void socket.emit('stop');
 
 export const sleep = (ms: number) => new Promise<void>(res => setTimeout(res, ms));
+
+export const servo = (absoluteDegree: number) => {
+	if (absoluteDegree < -90 || absoluteDegree > 90)
+		throw 'Values should be between -90 and 90';
+	socket.emit('servo', { degree: absoluteDegree });
+};
 
 export const exit = (stops = false) => {
 	if (stops)
