@@ -1,9 +1,10 @@
-import { buzzer, init as rob_init, LED, move } from './lib.js';
+import { buzzer, init as rob_init, LED, move, sleep } from './lib.js';
 
 // the link to your model provided by Teachable Machine export panel
 const url = './';
 
-// await rob_init('http://192.168.0.1:5000/');
+await rob_init('http://192.168.0.1:5000/');
+
 console.log('Init...');
 
 let model, webcam, labelContainer, maxPredictions;
@@ -30,12 +31,13 @@ document.getElementById('start-button').addEventListener('click', async function
     document.getElementById('webcam-container').appendChild(webcam.canvas);
     labelContainer = document.getElementById('label-container');
     for (let i = 0; i < maxPredictions; i++) { // and class labels
-        labelContainer.appendChild(   document.createElement('div') );
+        labelContainer.appendChild( document.createElement('div') );
     }
 });
 
 let lastPredicts = [];
 const PREDICTS_LENGTH = 5;
+const REFRESH_RATE = 10;
 
 function cyclePredicts(newest) {
     if(lastPredicts.length < PREDICTS_LENGTH){ lastPredicts.unshift(newest); return; }
@@ -67,9 +69,6 @@ const TURN_SPEED = 0.5;
 
 function execCommand(command){
     console.log(command);
-
-    return;
-
     // 
     switch(command){
         case 'forward':
@@ -91,8 +90,6 @@ function execCommand(command){
             }
         break;  
     }
-
-
 }
 
 async function handleWebcamData(predicitons){
@@ -108,6 +105,8 @@ async function loop() {
     webcam.update(); // update the webcam frame
     await predict();
     window.requestAnimationFrame(loop);
+
+    await sleep(REFRESH_RATE);
 }
 
 // run the webcam image through the image model
