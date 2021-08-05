@@ -33,7 +33,7 @@ export const LED = ({ r = false, g = false, b = false } = {}) => {
 	socket.emit('led', { r, g, b });
 };
 
-export const buzzer = (pw = 0) => {
+export const buzzer = (pw = 100) => {
 	if (pw < 0 || pw > 100)
 		throw 'PW values should be between 0 and 100';
 	socket.emit('buzzer', { pw });

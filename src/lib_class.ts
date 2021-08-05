@@ -19,7 +19,7 @@ export default class Robot {
 		return new Promise<void>(resolve => this.socket.on('pong', resolve));
 	}
 
-	buzzer(pw = 0) {
+	buzzer(pw = 100) {
 		this.socket.emit('buzzer', { pw });
 	}
 
