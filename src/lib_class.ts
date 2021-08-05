@@ -5,7 +5,7 @@ export class Robot {
 	socket: ReturnType<Manager['socket']>;
 
 	constructor(
-		public ip: string
+		public readonly ip: string
 	) {}
 
 	init() {
