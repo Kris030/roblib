@@ -1,7 +1,5 @@
 import speech from '@google-cloud/speech';
-//@ts-ignore
 import recorder from 'node-record-lpcm16';
-//@ts-ignore
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -33,7 +31,7 @@ const request = {
 
 */
 
-const command = (transcript: string) => {
+const command = (transcript) => {
     const moveMatch = /move (\d+) seconds with speed (\d{1,3})/.exec(transcript);
     if (moveMatch) {
       const [, time, speed] = moveMatch;
@@ -106,7 +104,7 @@ const handleTranscript = (data) => {
 
 // Create a recognize stream
 const recognizeStream = client
-  .streamingRecognize(request as any)
+  .streamingRecognize(request)
   .on('error', console.error)
   .on('data', data => handleTranscript(data)  );
 
