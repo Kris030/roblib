@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 const client = new speech.SpeechClient();
 
-import Robot from '../../out/lib_class.js';
+import {Robot} from '../../out/lib_class.js';
 const roland = new Robot();
 
 await roland.init();
@@ -25,7 +25,7 @@ const request = {
     LIST OF COMMANDS
 
     "move [seconds] seconds with speed [0-100]"
-    "turn [left/right] [seconds] seconds with speed [0-100]"
+    "turn [left/right] for [seconds] seconds with speed [0-100]"
     "turn led [red/green/blue]"
     "buzz [seconds] seconds with frequency [0-100]"
 
@@ -43,7 +43,7 @@ const command = (transcript) => {
       return;
     }
 
-    const turnMatch = /turn ((?:left)|(?:right)) for (d+) seconds with speed (\d{1,3})/.exec(transcript);
+    const turnMatch = /turn ((?:left)|(?:right)) for (\d+) seconds with speed (\d{1,3})/.exec(transcript);
     if (turnMatch) {
       const [, direction, time, speed] = turnMatch;
       console.log(`${direction} ${time}s ${speed}`);
@@ -95,7 +95,7 @@ const handleTranscript = (data) => {
     if( data.results && data.results[0].alternatives[0] ){
         console.log(`received ${data.results[0].alternatives[0].transcript}`);
 
-        const transcript = data.results[0].alternatives[0].transcript.toString().toLowerCase();
+        const transcript = data.results[0].alternatives[0].transcript.toString().trim().toLowerCase();
         command(transcript);
     } else {
         console.log('Something went wrong');
