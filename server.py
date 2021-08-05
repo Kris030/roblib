@@ -24,8 +24,8 @@ def move(data):
     right = int(data['right'])
 
     # clamp value between 0 and 100
-    left = clamp(-100, 100, left)
-    right = clamp(-100, 100, right)
+    left = clamp(left, -100, 100)
+    right = clamp(right, -100, 100)
 
     # print((left, right))
 
