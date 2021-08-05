@@ -19,8 +19,8 @@ export default class Robot {
 		return new Promise<void>(resolve => this.socket.on('pong', resolve));
 	}
 
-	buzzer({pw = 0, ms = 0} = {}) {
-		this.socket.emit('buzzer', { pw, ms });
+	buzzer(pw = 0) {
+		this.socket.emit('buzzer', { pw });
 	}
 
 	getSensorData() {

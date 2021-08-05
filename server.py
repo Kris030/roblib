@@ -65,3 +65,12 @@ def servo(data):
         return
     
     roland.servo_absolute(data['degree'])
+
+@socketio.on('buzzer', namespace='/io')
+def buzzer(data):
+
+    if not 'pw' in data or type(data['pw']) is not int:
+        socketio.emit('error', { "description": "Incorrect request data. Please use {\"pw\": [0-100]}" })
+        return
+
+    roland.buzzer(data['pw'])
