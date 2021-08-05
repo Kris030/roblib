@@ -49,5 +49,17 @@ export class Robot {
 	};
 	
 	stop() { this.socket.emit('stop'); }
-	
+
+	servo(absoluteDegree: number) {
+		if (absoluteDegree < -90 || absoluteDegree > 90)
+			throw 'Values should be between -90 and 90';
+		this.socket.emit('servo', { degree: absoluteDegree });
+	}
+
+	exit(stops = false) {
+		if (stops)
+			this.stop();
+		
+		this.socket.close();
+	}
 }

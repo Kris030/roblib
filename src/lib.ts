@@ -57,5 +57,5 @@ export const exit = (stops = false) => {
 	if (stops)
 		stop();
 	
-	close();
+	socket.close();
 };
