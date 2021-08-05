@@ -1,6 +1,5 @@
 #-*- coding:UTF-8 -*-
 from utils import clamp
-import wiringpi
 import RPi.GPIO as GPIO
 
 # Pinek
@@ -58,18 +57,17 @@ def init():
 	GPIO.setup(TrackSensorRightPin1,	GPIO.IN)
 	GPIO.setup(TrackSensorRightPin2,	GPIO.IN)
 	
-	# ------ WIRINGPI ------
-	wiringpi.wiringPiSetup()
-	
 	# buzzer setup
-	wiringpi.pinMode(buzzer_pin, 1)
-	wiringpi.softPwmCreate(buzzer_pin, 0, 100)
+	global pwm_BZZ
+	GPIO.setup(buzzer_pin, GPIO.OUT)
+	pwm_BZZ = GPIO.PWM(buzzer_pin, 0, 100)
 
 	# servo setup
-	wiringpi.pinMode(servo_pin, 1)
-	wiringpi.softPwmCreate(servo_pin, 0, 100)
+	global pwm_SER
+	GPIO.setup(servo_pin, GPIO.OUT)
+	pwm_SER = GPIO.PWM(servo_pin, 0, 100)
 
-	wiringpi.softPwmWrite(buzzer_pin, 100)
+	# GPIO.start(buzzer_pin, 100)
 	print("Robot loaded.")
 
 def motor(left, right):
@@ -95,16 +93,14 @@ def tracksensor():
 def sleep():
 	pwm_ENA.stop()
 	pwm_ENB.stop()
+	pwm_BZZ.stop()
+	pwm_SER.stop()
 	GPIO.cleanup()
 
-def buzzer(pw, ms):
-	wiringpi.softPwmWrite(buzzer_pin, pw)
-	wiringpi.delay(ms)
-	wiringpi.softPwmWrite(buzzer_pin, 100)
+def buzzer(pw):
+	pwm_BZZ.start(buzzer_pin, pw)
 
 # [-90, 90]
-async def servo_absolute(degree):
+def servo_absolute(degree):
 	degree = clamp(degree, -90, 90)
-
-	wiringpi.softPwmWrite(servo_pin, (int) (15 - (degree / 9)))
-	wiringpi.delay(1000)
+	pwm_SER.start(servo_pin, (int) (15 - (degree / 9)))
