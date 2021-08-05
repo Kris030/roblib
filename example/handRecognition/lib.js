@@ -1,5 +1,5 @@
 let socket;
-export const init = (ip) => {
+export const init = async (ip) => {
     const man = new io.Manager(ip);
     socket = man.socket('/io', {});
     socket.on('connect', () => {
@@ -19,12 +19,10 @@ export const move = ({ left = 0, right = 0 } = {}) => {
 export const LED = ({ r = false, g = false, b = false } = {}) => {
     socket.emit('led', { r, g, b });
 };
-export const buzzer = ({ pw = 0, ms = 0 } = {}) => {
+export const buzzer = (pw = 100) => {
     if (pw < 0 || pw > 100)
         throw 'PW values should be between 0 and 100';
-    if (ms <= 0)
-        throw 'MS values should be greater than 0';
-    socket.emit('buzzer', { pw, ms });
+    socket.emit('buzzer', { pw });
 };
 export const stop = () => void socket.emit('stop');
 export const sleep = (ms) => new Promise(res => setTimeout(res, ms));

@@ -1,8 +1,5 @@
-import { Robot } from '../out/lib_class.js';
-
-const roland = new Robot('http://192.168.0.1:5000/io');
-
-const sleep = (ms) => { return new Promise(resolve => setTimeout(resolve, ms)) }
+import * as roland from '../out/lib.js';
+const sleep = roland.sleep;
 
 await roland.init();
 console.log('Init...');

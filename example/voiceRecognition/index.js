@@ -1,65 +1,68 @@
-import speech from '@google-cloud/speech';
+import { SpeechClient } from '@google-cloud/speech';
+import * as roland from '../../out/lib_class.js';
 import recorder from 'node-record-lpcm16';
-import dotenv from 'dotenv';
+import { ip } from '../../config.json';
 
-dotenv.config();
-const client = new speech.SpeechClient();
+process.env['GOOGLE_APPLICATION_CREDENTIALS'] = './google_credentials.json';
 
-import {Robot} from '../../out/lib_class.js';
-const roland = new Robot();
+const client = new SpeechClient();
 
-await roland.init();
+await roland.init(ip);
 
-const encoding = 'LINEAR16', sampleRateHertz = 16000, languageCode = 'en-US';
-
-const request = {
+const sampleRateHertz = 16000, request = {
   config: {
-    encoding: encoding,
+    encoding: 'LINEAR16',
     sampleRateHertz: sampleRateHertz,
-    languageCode: languageCode,
+    languageCode: 'en-US',
   },
-  interimResults: false, // If you want interim results, set this to true
+  interimResults: false,
 };
 
-/*
+/**
+    ```
     LIST OF COMMANDS
 
     "move [seconds] seconds with speed [0-100]"
     "turn [left/right] for [seconds] seconds with speed [0-100]"
     "turn led [red/green/blue]"
     "buzz [seconds] seconds with frequency [0-100]"
-
+    ```
 */
+const commands = [
+  {
+    name: 'move',
+    regex: /move (\d+) seconds with speed (\d{1,3})/,
+    handler: ([ time, sp]) => {
+      const speed = Number(sp);
 
-const command = (transcript) => {
-    const moveMatch = /move (\d+) seconds with speed (\d{1,3})/.exec(transcript);
-    if (moveMatch) {
-      const [, time, speed] = moveMatch;
-      console.log(time + 's ' + speed);
-
-      roland.move( {left: parseInt(speed), right: parseInt(speed)} );
-      setTimeout(() => roland.move() , parseInt(time)*1000);
-
-      return;
-    }
-
-    const turnMatch = /turn ((?:left)|(?:right)) for (\d+) seconds with speed (\d{1,3})/.exec(transcript);
-    if (turnMatch) {
-      const [, direction, time, speed] = turnMatch;
-      console.log(`${direction} ${time}s ${speed}`);
-
-      roland.move( {left: direction =='right'? parseInt(speed) : -parseInt(speed), right: direction =='right'? -parseInt(speed) : parseInt(speed)} );
-      setTimeout(() => roland.move() , parseInt(time)*1000);
+      roland.move({ left: speed, right: speed });
+      setTimeout(roland.move, Number(time) * 1000);
       
-      return;
+      console.log(`moving for${time}s with ${speed} speed`);
     }
-
-    const ledMatch = /turn led ((?:red)|(?:green)|(?:blue))/.exec(transcript);
-    if (ledMatch) {
-      const [, color] = ledMatch;
-      console.log('led ' + color);
-
-      switch(color){
+  },
+  {
+    name: 'turn',
+    regex: /turn ((?:left)|(?:right)) for (\d+) seconds with speed (\d{1,3})/,
+    handler: ([direction, time, sp]) => {
+      const speed = Number(sp);
+      
+      if (direction === 'right')
+        roland.move({ left: speed, right: -speed });
+      else
+        roland.move({ left: -speed, right: speed });
+      
+      setTimeout(roland.move , Number(time) * 1000);
+      
+      console.log(`turning to ${direction} for ${time}s with ${speed} speed`);
+    }
+  },
+  {
+    name: 'led',
+    regex: /turn led ((?:red)|(?:green)|(?:blue))/,
+    handler: ([color]) => {
+      
+      switch(color) {
         case 'red':
           roland.LED({ r: true });
         break;
@@ -71,45 +74,65 @@ const command = (transcript) => {
         break;
       }
       
-      return;
+      console.log('turning led to ' + color);
     }
-
-    const buzzMatch = /buzz (\d+) seconds with frequency (\d{1,3})/.exec(transcript);
-    if (buzzMatch) {
+  }, 
+  {
+    name: 'buzz',
+    regex: /buzz (\d+) seconds with frequency (\d{1,3})/,
+    handler: ([time, frequency]) => {
       const [, time, frequency] = buzzMatch;
-      console.log(`${time}s ${frequency}hz`);
+      
+      roland.buzzer({ pw: parseInt(time) * 1000 });
+      setTimeout(roland.buzzer, time);
 
-      roland.buzzer({ pw: parseInt(time)*1000, ms:parseInt(frequency) });
-      return;
+      console.log(`buzzing for ${time}s with frequency ${frequency}hz`);
     }
-
-
-    if(transcript == 'explosive diarrhea'){
-      roland.move({left: -70, right:70});
-
-      setTimeout(() => roland.move(), 2000);
+  }, 
+  {
+    name: 'explosive_diarrhea',
+    regex: /explosive diarrhea/,
+    handler: () => {
+      roland.move({ left: -70, right: 70 });
+      setTimeout(roland.move, 2000);
     }
-}
+  }
+];
 
-const handleTranscript = (data) => {
-    if( data.results && data.results[0].alternatives[0] ){
+const tryCommand = text => {
+  let rArr;
+
+  const cmd = commands.find(c => {
+    const res = c.regex.exec(text);
+    if (!res)
+      return false;
+    
+    [, ...rArr] = res;
+    return true;
+  });
+
+  if (!cmd)
+    return false;
+  
+  cmd.handler(...rArr);
+  return true;
+};
+
+const handleTranscript = data => {
+    if (data.results && data.results[0].alternatives[0]) {
         console.log(`received ${data.results[0].alternatives[0].transcript}`);
 
         const transcript = data.results[0].alternatives[0].transcript.toString().trim().toLowerCase();
-        command(transcript);
-    } else {
+        tryCommand(transcript);
+    } else
         console.log('Something went wrong');
-    }
-}
+};
 
-// Create a recognize stream
 const recognizeStream = client
   .streamingRecognize(request)
   .on('error', console.error)
-  .on('data', data => handleTranscript(data)  );
+  .on('data', handleTranscript);
 
-// Start recording and send the microphone input to the Speech API.
-// Ensure SoX is installed, see https://www.npmjs.com/package/node-record-lpcm16#dependencies
 recorder
   .record({
     sampleRateHertz: sampleRateHertz,
