@@ -1,9 +1,7 @@
-import { Robot } from '../out/lib_class.js';
+import { init, move } from '../out/lib.js';
 
-const roland = new Robot();
+await init();
 
-await roland.init();
+// buzzer({pw:10, ms: 1000});
 
-// roland.buzzer({pw:10, ms: 1000});
-
-roland.move();
+move();

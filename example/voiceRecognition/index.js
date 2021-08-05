@@ -1,12 +1,10 @@
+import * as roland from '../../out/lib_class.js';
 import speech from '@google-cloud/speech';
 import recorder from 'node-record-lpcm16';
-import dotenv from 'dotenv';
 
-dotenv.config();
+process.env['GOOGLE_APPLICATION_CREDENTIALS'] = './google_credentials.json';
+
 const client = new speech.SpeechClient();
-
-import {Robot} from '../../out/lib_class.js';
-const roland = new Robot();
 
 await roland.init();
 
