@@ -15,8 +15,9 @@ def move(data):
 
     # check if keys in request
     if (not 'left' in data or not 'right' in data or not (type(data['left']) is int or float) or not (type(data['right']) is int or float)) :
-        print('INCORRECT DATA')
-        socketio.emit('error', {"description": "Incorrect request data. Please use format {\"left\":[-100-100], \"right\":[-100-100]}"})
+        # print('INCORRECT DATA')
+        socketio.emit('error', {"description": "Incorrect request data. Please use format {\"left\": [-100-100], \"right\": [-100-100]}"})
+        return
 
     # convert to integer
     left = int(data['left'])
@@ -37,7 +38,8 @@ def move(data):
 def led(data):
     # check if keys in request
     if (not 'r' in data or not 'g' in data or not 'b' in data or type(data['r']) is not int or type(data['g']) is not int or type(data['b']) is not int) :
-        socketio.emit('error', { "description": "Incorrect request data. Please use {\"r\":[0-255], \"g\":[0-255], \"b\":[0-255]}" })
+        socketio.emit('error', { "description": "Incorrect request data. Please use {\"r\": [0-255], \"g\": [0-255], \"b\": [0-255]}" })
+        return
 
     # convert to integer
     R = int(data['r'])
@@ -65,3 +67,13 @@ def sensor():
     res = roland.tracksensor()
     emit('return-tracksensor', { "data": res })
     # print(res)
+
+# set servo angle
+@socketio.on('servo', namespace='/io')
+def sensor(data):
+
+    if not 'degree' in data or type(data['degree']) is not int:
+        socketio.emit('error', { "description": "Incorrect request data. Please use {\"degree\": [-90-90]}" })
+        return
+    
+    roland.servo_absolute(data.degree)
