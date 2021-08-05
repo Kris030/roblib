@@ -1,86 +1,120 @@
-// More API functions here:
-            // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
-        
-            // the link to your model provided by Teachable Machine export panel
-            const url = './';
-        
-            let model, webcam, labelContainer, maxPredictions;
-        
-            // Load the image model and setup the webcam
-            async function init() {
-                const modelURL = url + 'model.json';
-                const metadataURL = url + 'metadata.json';
-        
-                // load the model and metadata
-                // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
-                // or files from your local hard drive
-                model = await tmImage.load(modelURL, metadataURL);
-                maxPredictions = model.getTotalClasses();
-        
-                // Convenience function to setup a webcam
-                const flip = true; // whether to flip the webcam
-                webcam = new tmImage.Webcam(212, 212, flip); // width, height, flip
-                await webcam.setup(); // request access to the webcam
-                webcam.play();
-                window.requestAnimationFrame(loop);
+import { buzzer, init as rob_init, LED, move } from './lib.js';
 
-                // append elements to the DOM
-                document.getElementById('webcam-container').appendChild(webcam.canvas);
-                labelContainer = document.getElementById('label-container');
-                for (let i = 0; i < maxPredictions; i++) { // and class labels
-                    labelContainer.appendChild(   document.createElement('div') );
-                }
+// the link to your model provided by Teachable Machine export panel
+const url = './';
+
+// await rob_init('http://192.168.0.1:5000/');
+console.log('Init...');
+
+let model, webcam, labelContainer, maxPredictions;
+
+// Load the image model and setup the webcam
+document.getElementById('start-button').addEventListener('click', async function() {
+    const modelURL = url + 'model.json';
+    const metadataURL = url + 'metadata.json';
+
+    // load the model and metadata
+    // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+    // or files from your local hard drive
+    model = await tmImage.load(modelURL, metadataURL);
+    maxPredictions = model.getTotalClasses();
+
+    // Convenience function to setup a webcam
+    const flip = true; // whether to flip the webcam
+    webcam = new tmImage.Webcam(212, 212, flip); // width, height, flip
+    await webcam.setup(); // request access to the webcam
+    webcam.play();
+    window.requestAnimationFrame(loop);
+
+    // append elements to the DOM
+    document.getElementById('webcam-container').appendChild(webcam.canvas);
+    labelContainer = document.getElementById('label-container');
+    for (let i = 0; i < maxPredictions; i++) { // and class labels
+        labelContainer.appendChild(   document.createElement('div') );
+    }
+});
+
+let lastPredicts = [];
+const PREDICTS_LENGTH = 5;
+
+function cyclePredicts(newest) {
+    if(lastPredicts.length < PREDICTS_LENGTH){ lastPredicts.unshift(newest); return; }
+
+    lastPredicts.pop();
+    lastPredicts.unshift(newest);
+}
+
+function getAvgPred(){
+    let results = {forward:0, left:0, right:0, back:0, buzz:0, idle:0};
+
+    for (let i = 0; i < lastPredicts.length; i++) {
+        for (const { className, probability } of lastPredicts[i]) {
+            results[className] += probability;
+        }
+    }  
+
+    let maxKey = 'idle';
+    for (const [key, value] of Object.entries(results)) {
+        if (value > results[maxKey])
+            maxKey = key;
+    }
+
+    return maxKey;
+}
+
+const SPEED = 30;
+const TURN_SPEED = 0.5;
+
+function execCommand(command){
+    console.log(command);
+
+    return;
+
+    // 
+    switch(command){
+        case 'forward':
+            move({left:SPEED, right:SPEED });
+        break;
+        case 'back':
+            move({left:SPEED*0.75, right:SPEED*0.75 });
+        break;
+        case 'right':
+            move({left:SPEED*(1+TURN_SPEED), right:SPEED*(1-TURN_SPEED) });
+        break;
+        case 'left':
+            move({left:SPEED*(1-TURN_SPEED), right:SPEED*(1+TURN_SPEED) });
+        break;
+        case 'idle':
+            // don't spam with unnecessary requests
+            if(lastPredicts[ lastPredicts.length - 1 ] != 'idle' ){
+                move();
             }
-
-            let lastPredicts = [];
-            const PREDICTS_LENGTH = 10;
-
-            function cyclePredicts(newest) {
-                if(lastPredicts.length < PREDICTS_LENGTH){ return; }
-                lastPredicts.pop();
-                lastPredicts.unshift(newest);
-            }
-
-            /**
-             * ORDER
-             * forward: 0.000009464644790568855 
-                left stationary: 0.06639455258846283 
-                right stationary: 0.9242545962333679
-                back: 0.0009091228130273521 
-                buzz: 0.00004546275522443466 
-                idle: 0.008386743254959583
-             * 
-             * 
-             * */
-
-            function getAvgPred(){
-                
-            }
-
-            async function handleWebcamData(predicitons){
-                // console.log(`${key}: ${pred}`);
-
-                console.log(predictions);
-
-                // pred is a float
-                cyclePredicts(  );
+        break;  
+    }
 
 
+}
 
-            }
-        
-            async function loop() {
-                webcam.update(); // update the webcam frame
-                await predict();
-                window.requestAnimationFrame(loop);
-            }
-        
-            // run the webcam image through the image model
-            async function predict() {
-                // predict can take in an image, video or canvas html element
-                const prediction = await model.predict(webcam.canvas);
-                console.log('---');
+async function handleWebcamData(predicitons){
+    
+    cyclePredicts( predicitons );
 
-                handleWebcamData(prediction);
+    const command = getAvgPred();
+    execCommand(command);
 
-            }
+}
+
+async function loop() {
+    webcam.update(); // update the webcam frame
+    await predict();
+    window.requestAnimationFrame(loop);
+}
+
+// run the webcam image through the image model
+async function predict() {
+    // predict can take in an image, video or canvas html element
+    const prediction = await model.predict(webcam.canvas);
+
+    handleWebcamData(prediction);
+
+}
