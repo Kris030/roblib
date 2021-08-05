@@ -1,7 +1,8 @@
 import { Manager } from 'socket.io-client';
+import { ip } from '../config.json';
 
 let socket: ReturnType<Manager['socket']>;
-export const init = (ip: string) => {
+export const init = () => {
 	const man = new Manager(ip);
 
 	// create socket

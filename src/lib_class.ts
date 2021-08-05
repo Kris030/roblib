@@ -1,16 +1,13 @@
 import { Manager } from 'socket.io-client';
+import { ip } from '../config.json';
 
 export class Robot {
 
 	socket: ReturnType<Manager['socket']>;
 
-	constructor(
-		public readonly ip: string
-	) {}
-
 	init() {
 		// create manager with class ip
-		const man = new Manager(this.ip);
+		const man = new Manager(ip);
 		// create socket
 		this.socket = man.socket('/io', {});
 
