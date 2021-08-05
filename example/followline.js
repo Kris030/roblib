@@ -1,6 +1,6 @@
-import { robot } from '../out/lib_class.js';
+import { Robot } from '../out/lib_class.js';
 
-const roland = new robot('http://192.168.0.1:5000/io');
+const roland = new Robot('http://192.168.0.1:5000/io');
 
 const sleep = (ms) => { return new Promise(resolve => setTimeout(resolve, ms)) }
 
@@ -23,17 +23,18 @@ if(process.argv[2] && process.argv[2].includes('-t=') ) {
 }
 
 // settings
-const REFRESH_RATE_MS = 10;
-const SPEED = 3;
+const REFRESH_RATE_MS = 5;
+const SPEED = 15;
 // between 0 and 1
 // increment these to sharpen turn angle
-const TURN_SPEED_MIN_MODIFIER = .6;
-const TURN_SPEED_MED_MODIFIER = .85;
+const TURN_SPEED_MIN_MODIFIER = .9;
+const TURN_SPEED_MED_MODIFIER = 1.3;
 const TURN_SPEED_MAX_MODIFIER = 1.9;
 
 let lastInput = [1,1,1,1];
 let mode = 'normal';
 
+/*
 const tryToGetBackToLine = () => {
     return new Promise(async resolve => {
 
@@ -93,7 +94,7 @@ const tryToGetBackToLine = () => {
         resolve();
     }); 
 
-}
+} */
 
 // sharp turn until back on track
 // direction is [-1 - 1]
@@ -109,7 +110,9 @@ const turnUntilLineFound = (direction) => {
             const input = invertSensorInput( await roland.getSensorData() ) ;
 
             // path found
-            if(input[0]+input[0]+input[0]+input[0] != 0 ){
+            if(input[0]+input[1]+input[2]+input[3] != 0 ){
+                roland.LED({r:1,g:0,b:0});
+
                 // go back to normal
                 tempRun = false;
                 mode = 'normal'
@@ -119,7 +122,7 @@ const turnUntilLineFound = (direction) => {
             }
 
             // keep turning
-            roland.move({left:5*SPEED*direction, right:5*SPEED* -direction});
+            roland.move({left:3*SPEED*direction, right:6*SPEED* -direction});
             await sleep(REFRESH_RATE_MS);
         }
 
@@ -162,14 +165,11 @@ const getDirection = async(input) => {
     // no input within timeout
     if( lo+ro+ri+li == 0 && new Date().valueOf() > lastInputTime + TRACK_LEFT_TIMEOUT ){
         // off-track
-
-        console.log('HARAM');
-
         const [left, right] = getLastGeneralDirection();
 
         input = await turnUntilLineFound(left > right ? -1 : 1);
     
-        if(input === undefined){ process.exit(0); return; }
+        if(input === undefined){ roland.move(); process.exit(0); return; }
 
         [lo, li, ri, ro] = input;
     }
@@ -247,7 +247,7 @@ const turn = (angle, speed) => {
     return target;
 }
 
-const test_inputs = [
+/* const test_inputs = [
     [1,0,0,0],
     [1,1,0,0],
     [0,1,0,0],
@@ -260,7 +260,7 @@ const test_inputs = [
     [1,0,1,1],
     [0,1,1,1],
     [1,1,0,1],
-]
+] */
 
 const invertSensorInput = (input) => {
     return [ input[0]==0?1:0, input[1]==0?1:0, input[2]==0?1:0, input[3]==0?1:0 ];  // xd fml

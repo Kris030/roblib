@@ -1,30 +1,8 @@
-import { robot } from '../out/lib_class.js';
+import { Robot } from '../out/lib_class.js';
 
-const roland = new robot('http://192.168.0.1:5000/io');
+const roland = new Robot();
 
 await roland.init();
+console.log('gasdfgsdgf');
 
 roland.move();
-
-roland.move();
-
-roland.move();
-
-roland.move();
-
-roland.move();
-
-roland.move();
-
-roland.move();
-
-roland.move();
-
-roland.move();
-
-roland.move();
-
-roland.move();
-
-roland.move();
-
