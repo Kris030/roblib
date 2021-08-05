@@ -1,7 +1,7 @@
 import { Manager } from 'socket.io-client';
 import { ip } from '../config.json';
 
-export class Robot {
+export default class Robot {
 
 	socket: ReturnType<Manager['socket']>;
 
