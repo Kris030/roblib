@@ -33,7 +33,7 @@ def move(data):
     roland.motor(left, right)
 
 # request for LED
-# BODY: {"r": 255,"g": 255,"b": 255}
+# BODY: {"r": true|false,"g": true|false,"b": true|false}
 @socketio.on('led', namespace='/io')
 def led(data):
     # check if keys in request
