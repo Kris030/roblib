@@ -66,7 +66,7 @@ def init():
 	wiringpi.softPwmCreate(buzzer_pin, 0, 100)
 
 	# servo setup
-	wiringpi.setup(servo_pin, GPIO.OUT)
+	wiringpi.pinMode(servo_pin, GPIO.OUT)
 	wiringpi.softPwmCreate(servo_pin, 0, 100)
 
 	wiringpi.softPwmWrite(buzzer_pin, 100)

@@ -1,9 +1,10 @@
-import { Manager } from 'socket.io-client';
-import { ip } from '../config.json';
+import * as io from 'socket.io-client';
+// remove in browser
 
-let socket: ReturnType<Manager['socket']>;
-export const init = () => {
-	const man = new Manager(ip);
+let socket: ReturnType<io.Manager['socket']>;
+export const init = async (ip: string) => {
+
+	const man = new io.Manager(ip);
 
 	// create socket
 	socket = man.socket('/io', {});
