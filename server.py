@@ -64,4 +64,4 @@ def sensor(data):
         socketio.emit('error', { "description": "Incorrect request data. Please use {\"degree\": [-90-90]}" })
         return
     
-    roland.servo_absolute(data.degree)
+    roland.servo_absolute(data['degree'])
