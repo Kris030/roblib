@@ -1,14 +1,12 @@
 from flask_socketio import SocketIO, emit
 from flask import Flask
+from utils import clamp
 import roland
 
 app = Flask(__name__)
 socketio = SocketIO(app)
 
 roland.init()
-
-def clamp(_min, _max, val):
-    return max(_min, min(val, _max))
 
 # request for moving around
 # BODY: {"left": 100, "right": 100}

@@ -1,14 +1,7 @@
 #-*- coding:UTF-8 -*-
-#mit hozzunk a táborba?
-
-#1 szigszalag
-#2 mérőszalag
-#3 csavarhúzó, bitkészlet
-#4 pótcsavarok
+from utils import clamp
 import wiringpi
-import RPi.GPIO as GPIO # Raspberry Pi General Purpose Input/Output
-print("Roland betöltve.")
-import time # delayekhez kell
+import RPi.GPIO as GPIO
 
 # Pinek
 # Motor
@@ -31,6 +24,7 @@ TrackSensorLeftPin2  =  5    # The second tracking infrared sensor pin on the le
 TrackSensorRightPin1 =  4    # The first tracking infrared sensor pin on the right is connected to  BCM port 4 of Raspberry pi
 TrackSensorRightPin2 =  18   # The second tracking infrared sensor pin on the right is connected to  BCMport 18 of Raspberry pi
 
+servo_pin = 4
 buzzer_pin = 10
 
 def init():
@@ -64,13 +58,18 @@ def init():
 	GPIO.setup(TrackSensorRightPin1,	GPIO.IN)
 	GPIO.setup(TrackSensorRightPin2,	GPIO.IN)
 	
-	print("Robot loaded.")
-
-	# buzzer setup
+	# ------ WIRINGPI ------
 	wiringpi.wiringPiSetup()
+	
+	# buzzer setup
 	wiringpi.pinMode(buzzer_pin, 1)
 	wiringpi.softPwmCreate(buzzer_pin, 0, 100)
 
+	# servo setup
+	wiringpi.pinMode(servo_pin, 1)
+	wiringpi.softPwmCreate(servo_pin, 0, 100)
+
+	print("Robot loaded.")
 
 def motor(left, right):
 	pwm_ENA.start(abs(left))
@@ -101,3 +100,10 @@ def buzzer(pw, ms):
 	wiringpi.softPwmWrite(buzzer_pin, pw)
 	wiringpi.delay(ms)
 	wiringpi.softPwmWrite(buzzer_pin, 100)
+
+# [-90, 90]
+async def servo_absolute(degree):
+	degree = clamp(degree, -90, 90)
+
+	wiringpi.softPwmWrite(servo_pin, (int) (15 - (degree / 9)))
+	wiringpi.delay(1000)
