@@ -1,12 +1,18 @@
-import { buzzer, init as rob_init, LED, move } from './lib.js';
+import { init as rob_init, move } from './lib.js';
 
 // the link to your model provided by Teachable Machine export panel
 const url = './';
 
-await rob_init('192.168.0.1');
+await rob_init('http://192.168.0.1:5000/io');
 console.log('Init...');
 
+// settings
 let model, webcam, labelContainer, maxPredictions;
+
+let lastPredicts = [];
+const PREDICTS_LENGTH = 5;
+const REFRESH_RATE = 10;
+const SPEED = 20;
 
 // Load the image model and setup the webcam
 document.getElementById('start-button').addEventListener('click', async function() {
@@ -34,9 +40,7 @@ document.getElementById('start-button').addEventListener('click', async function
     }
 });
 
-let lastPredicts = [];
-const PREDICTS_LENGTH = 5;
-const REFRESH_RATE = 10;
+
 
 function cyclePredicts(newest) {
     if(lastPredicts.length < PREDICTS_LENGTH){ lastPredicts.unshift(newest); return; }
@@ -45,6 +49,7 @@ function cyclePredicts(newest) {
     lastPredicts.unshift(newest);
 }
 
+// get command key to execute
 function getAvgPred(){
     let results = {forward:0, left:0, right:0, back:0, buzz:0, idle:0};
 
@@ -63,9 +68,7 @@ function getAvgPred(){
     return maxKey;
 }
 
-const SPEED = 20;
-const TURN_SPEED = 0.5;
-
+// emit command to flask server
 function execCommand(command){
     console.log(command);
     switch(command){
@@ -73,13 +76,13 @@ function execCommand(command){
             move({left:SPEED, right:SPEED });
         break;
         case 'back':
-            move({left:SPEED*0.75, right:SPEED*0.75 });
+            move({left:-SPEED*0.75, right:-SPEED*0.75 });
         break;
         case 'right':
-            move({left:SPEED*(1+TURN_SPEED), right:SPEED*(1-TURN_SPEED) });
+            move({left:SPEED, right:-SPEED });
         break;
         case 'left':
-            move({left:SPEED*(1-TURN_SPEED), right:SPEED*(1+TURN_SPEED) });
+            move({left:-SPEED, right:SPEED });
         break;
         case 'idle':
             // don't spam with unnecessary requests
@@ -90,12 +93,9 @@ function execCommand(command){
 }
 
 async function handleWebcamData(predicitons){
-    
     cyclePredicts( predicitons );
-
     const command = getAvgPred();
     execCommand(command);
-
 }
 
 async function loop() {
@@ -103,7 +103,7 @@ async function loop() {
     await predict();
     window.requestAnimationFrame(loop);
 
-    await sleep(REFRESH_RATE);
+    // await sleep(REFRESH_RATE);
 }
 
 // run the webcam image through the image model
@@ -112,5 +112,4 @@ async function predict() {
     const prediction = await model.predict(webcam.canvas);
 
     handleWebcamData(prediction);
-
 }

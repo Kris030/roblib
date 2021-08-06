@@ -18,7 +18,7 @@ const sampleRateHertz = 16000, request = {
   interimResults: false,
 };
 
-/**
+/**0
     ```
     LIST OF COMMANDS
 
