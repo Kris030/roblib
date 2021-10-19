@@ -1,8 +1,5 @@
-
 node_modules
 out
 test
 
-config.json
-
-example/voiceRecognition/google_credentials.json
+**/*google_credentials*.json
