@@ -23,7 +23,8 @@
         "watch": "tsc -w",
         "start": "node --experimental-json-modules .",
         "stop": "node out/forceStop.js",
-        "clean": "rm -rf out"
+        "clean": "rm -rf out",
+        "postinstall": "npx tsc -p ."
     },
     "repository": {
         "type": "git",
