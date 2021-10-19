@@ -14,7 +14,10 @@ export const init = async (ip: string) => {
 	});
 
 	// connected to server
-	return new Promise<void>(res => socket.on('connect', res));
+	return new Promise<void>((resolve, reject) => {
+		socket.on('connect', resolve);
+		socket.on('connect_error', reject);
+	});
 };
 
 export const getSensorData = () => {
