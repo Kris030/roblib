@@ -72,7 +72,7 @@ def init():
 	wiringpi.softPwmWrite(buzzer_pin, 100)
 
 	# GPIO.start(buzzer_pin, 100)
-	print("Robot loaded.")
+	print('Robot loaded.')
 
 def motor(left, right):
 	pwm_ENA.start(abs(left))
