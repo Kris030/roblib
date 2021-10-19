@@ -1,4 +1,4 @@
-import { init, move } from '../../../out/lib';
+import { init, move } from '../../../out/lib_browser.js';
 
 await init('http://192.168.0.1:5000/io');
 console.log('Initing...');
@@ -14,7 +14,7 @@ const SPEED = 20;
 // Load the image model and setup the webcam
 document
 	.getElementById('start-button')
-	.addEventListener('click', async function () {
+	.addEventListener('click', async function() {
         const url = './', modelURL = url + 'model.json', metadataURL = url + 'metadata.json';
 
 		// load the model and metadata

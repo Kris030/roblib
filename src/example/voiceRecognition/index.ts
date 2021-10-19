@@ -126,7 +126,8 @@ const tryCommand = (text: string) => {
 	if (!cmd)
 		return false;
 	
-	cmd.handler(...rArr as [string, string, string]);
+	//@ts-expect-error sry...
+	cmd.handler(...rArr);
 	return true;
 };
 

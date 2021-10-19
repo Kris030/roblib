@@ -1,5 +1,4 @@
-// remove in browser
-import * as io from 'socket.io-client';
+import * as io from 'socket.io-client'; // remove in browser
 
 export let socket: ReturnType<io.Manager['socket']>;
 
@@ -98,7 +97,7 @@ export const servo = (absoluteDegree: number) => {
 };
 
 /**
- * megszakítja a robottal a kapcsolatot
+ * Megszakítja a robottal a kapcsolatot.
  * @param stops - véglegesen leállítsuk-e a robot motorjait
  * (ne add meg, ha valaki más még használná)
  */
