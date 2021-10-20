@@ -70,5 +70,5 @@
 		"forceConsistentCasingInFileNames": true		/* Disallow inconsistently-cased references to the same file. */
 	},
 	"include": ["src/**/*", "tests/**/*"],
-	"exclude": ["src/example/handRecognition/*"]
+	"exclude": ["src/example/handRecognition/*", "src/lib_browser.ts"]
 }
