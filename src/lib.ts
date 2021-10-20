@@ -1,6 +1,6 @@
 import * as io from 'socket.io-client'; // remove in browser
 
-export let socket: ReturnType<io.Manager['socket']>;
+let socket: ReturnType<io.Manager['socket']>;
 
 /**
  * Kapcsolatot létesít a robottal,
@@ -20,8 +20,8 @@ export const init = async (ip: string) => {
 	socket = man.socket('/io', {});
 
 	// connected to server
-	return new Promise<void>((res, rej) => {
-		socket.on('connect', res);
+	return new Promise<typeof socket>((res, rej) => {
+		socket.on('connect', () => res(socket));
 		socket.on('connect_error', rej);
 	});
 };

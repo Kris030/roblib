@@ -1,6 +1,6 @@
 import { init, move } from '../lib_browser.js';
 
-//await init('http://192.168.0.1:5000/io');
+await init('http://192.168.0.1:5000/io');
 console.log('Initing...');
 
 // settings
