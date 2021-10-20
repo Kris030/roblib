@@ -17,12 +17,10 @@ LED_R = 22
 LED_G = 27
 LED_B = 24
 
-# TrackSensorLeftPin1 TrackSensorLeftPin2 TrackSensorRightPin1 TrackSensorRightPin2
-#      	3                 5                  4                   18
-TrackSensorLeftPin1  =  3    # The first tracking infrared sensor pin on the left is connected to  BCM port 3 of Raspberry pi
-TrackSensorLeftPin2  =  5    # The second tracking infrared sensor pin on the left is connected to  BCM port 5 of Raspberry pi
-TrackSensorRightPin1 =  4    # The first tracking infrared sensor pin on the right is connected to  BCM port 4 of Raspberry pi
-TrackSensorRightPin2 =  18   # The second tracking infrared sensor pin on the right is connected to  BCMport 18 of Raspberry pi
+TrackSensorLeftPin1  =  3		# The first tracking infrared sensor pin on the left is connected to  BCM port 3 of Raspberry pi
+TrackSensorLeftPin2  =  5		# The second tracking infrared sensor pin on the left is connected to  BCM port 5 of Raspberry pi
+TrackSensorRightPin1 =  4		# The first tracking infrared sensor pin on the right is connected to  BCM port 4 of Raspberry pi
+TrackSensorRightPin2 =  18		# The second tracking infrared sensor pin on the right is connected to  BCMport 18 of Raspberry pi
 
 servo_pin = 4
 buzzer_pin = 10
@@ -72,7 +70,7 @@ def init():
 	wiringpi.softPwmWrite(buzzer_pin, 100)
 
 	# GPIO.start(buzzer_pin, 100)
-	print("Robot loaded.")
+	print('Robot loaded.')
 
 def motor(left, right):
 	pwm_ENA.start(abs(left))
