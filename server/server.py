@@ -16,7 +16,7 @@ def move(data):
 	# check if keys in request
 	if (not 'left' in data or not 'right' in data or not (type(data['left']) is int or float) or not (type(data['right']) is int or float)) :
 		# print('INCORRECT DATA')
-		socketio.emit('error', {'description': 'Incorrect request data. Please use format {\'left\': [-100-100], \'right\': [-100-100]}'})
+		socketio.emit('error', { 'description': 'Incorrect request data. Please use format {\'left\': [-100-100], \'right\': [-100-100]}' })
 		return
 
 	# convert to integer
