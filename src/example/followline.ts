@@ -1,6 +1,8 @@
 import { getSensorData, init, move, sleep } from '../lib';
 
-require('dotenv').config();
+import {config as dotenv} from "dotenv"
+
+dotenv()
 const DEBUG = process.env['ROBLIB_DEBUG'] === 'true';
 
 await init(process.env['ROBLIB_IP'] || '192.168.0.1:5000');
