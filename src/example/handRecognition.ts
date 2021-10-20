@@ -18,7 +18,7 @@ const SPEED = 20;
 document
 	.getElementById('start-button')
 	?.addEventListener('click', async function() {
-        const url = './', modelURL = url + 'model.json', metadataURL = url + 'metadata.json';
+		const url = './', modelURL = url + 'model.json', metadataURL = url + 'metadata.json';
 
 		// load the model and metadata
 		// Refer to tmImage.loadFromFiles() in the API to support files from a file picker

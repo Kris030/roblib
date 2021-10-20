@@ -37,7 +37,7 @@ const getDirection = async (input: SensData) => {
 		lastInputTime = new Date().valueOf();
 
 	if (DEBUG)
-        console.log(`${lo} | ${li} | ${ri} | ${ro} `);
+		console.log(`${lo} | ${li} | ${ri} | ${ro} `);
 
 	// determine the direction/curveture of the line ahead
 	// <------ left | right --->
@@ -102,23 +102,23 @@ const turn = (angle: number, speed: number) => {
 
 // returns 0 if 1, 1 if 0
 const invertSensorInput = (input: SensData): SensData =>
-        input.map(n => Number(!n)) as SensData; // bruh moment
+		input.map(n => Number(!n)) as SensData; // bruh moment
 
 while (run) {
 	const sensDat = invertSensorInput(await getSensorData());
 
 	if (DEBUG)
-        console.log(`detected ${JSON.stringify(sensDat)}`);
+		console.log(`detected ${JSON.stringify(sensDat)}`);
 
 	const direction = await getDirection(sensDat);
 
 	if (DEBUG)
-        console.log(direction);
+		console.log(direction);
 
 	move(turn(direction, SPEED));
 
 	if (DEBUG)
-        console.log(turn(direction, SPEED));
+		console.log(turn(direction, SPEED));
 
 	await sleep(REFRESH_RATE_MS);
 } //*/

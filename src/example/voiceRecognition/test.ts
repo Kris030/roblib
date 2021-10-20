@@ -71,7 +71,7 @@ const tryCommand = (text: string) => {
 		return false;
 	
 	console.log(`Matched command '${cmd.name}'`);
-    
+
 	return true;
 };
 
