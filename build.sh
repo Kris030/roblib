@@ -2,7 +2,7 @@
 
 
 ## typescript compile
-tsc
+npx tsc -p .
 
 ## generate browser lib
 # write a single line into it (keep source maps correct)
