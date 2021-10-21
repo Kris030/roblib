@@ -1,0 +1,58 @@
+.base-color{
+    background-color: rgb(37,37,37);
+}
+
+body, html{
+    background-color: rgb(37, 37,37);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6,div,p,span{
+    color: whitesmoke;
+    text-align: center;
+    margin: 10px;
+}
+
+.roland{
+    font-size:300%;
+    font-weight: 1000;
+}
+
+.hc{
+    font-size: 250%;
+    font-weight: 1000;
+}
+
+.default-font{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.start-button-container{
+    margin: 20px;
+    align-items: center;
+}
+
+#webcam-container{
+    margin: 20px;
+    align-items: center;
+}
+
+#label-container{
+    margin: 20px;
+    align-items: center;
+}
+
+#start-button{
+    padding: 5px 10px;
+    border-width: 2px;
+    border-radius: 4px;
+    border-color: transparent;
+    background-color: #00ffff;
+    outline: none;
+    font-size: 200%;
+}
+
+#start-button:hover{
+    background-color: #fff;
+
+}
